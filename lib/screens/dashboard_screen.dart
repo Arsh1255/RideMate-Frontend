@@ -122,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               color: AppColors.white.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(LucideIcons.leaf, color: AppColors.white, size: 32),
+                            child: Icon(LucideIcons.leaf, color: AppColors.white, size: 32),
                           ),
                           const SizedBox(width: 16),
                           Column(
@@ -135,7 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 "${_formatCo2(_totalCo2Saved)} kg",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.white,
@@ -161,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               Expanded(
                 child: _leaderboard.isEmpty
-                    ? const Center(child: Text("No leaderboard data yet.", style: TextStyle(color: AppColors.textSecondary)))
+                    ? Center(child: Text("No leaderboard data yet.", style: TextStyle(color: AppColors.textSecondary)))
                     : ListView.builder(
                         itemCount: _leaderboard.length,
                         itemBuilder: (context, index) {

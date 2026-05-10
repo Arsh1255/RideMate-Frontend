@@ -3,7 +3,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../core/colors.dart';
 import '../widgets/icons_gradient_button.dart';
-import '../screens/ride_in_progress_screen.dart';
 import '../service/auth_service.dart';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
@@ -63,17 +62,17 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           _isLoading ? "Finding matches..." : "Matches Found",
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
@@ -127,7 +126,7 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
                   _buildErrorOverlay(_error),
                   
                 if (!_isLoading && _matches.isEmpty && _error.isEmpty)
-                  const Center(child: Text("No matches found", style: TextStyle(color: AppColors.textSecondary))),
+                  Center(child: Text("No matches found", style: TextStyle(color: AppColors.textSecondary))),
               ],
             ),
           ),
@@ -169,7 +168,7 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
                             ),
                             Text(
                               _isLoading ? "We'll notify you when someone matches!" : "Found ${_matches.length} matches nearby",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 12,
                               ),
@@ -209,11 +208,11 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
               child: const Icon(Icons.close, color: Colors.white, size: 40),
             ),
             const SizedBox(height: 24),
-            const Text("Search Failed", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            Text("Search Failed", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(error, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+              child: Text(error, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.textSecondary)),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -302,7 +301,7 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
           ),
           Text(
             match['mode'] ?? "Ride",
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 10,
             ),
@@ -373,7 +372,7 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
                 ),

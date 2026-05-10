@@ -192,15 +192,15 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Find your ride", 
+        title: Text("Find your ride", 
           style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
@@ -255,7 +255,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                       child: Column(
                                         children: [
                                           _buildLocationInput("Pickup location", _pickupController, _pickupFocus, true),
-                                          const Divider(height: 32, color: AppColors.border),
+                                          Divider(height: 32, color: AppColors.border),
                                           _buildLocationInput("Drop location", _dropController, _dropFocus, false),
                                         ],
                                       ),
@@ -272,9 +272,9 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(color: AppColors.border),
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                       ),
-                                      child: const Icon(LucideIcons.arrowUpDown, size: 20, color: AppColors.textPrimary),
+                                      child: Icon(LucideIcons.arrowUpDown, size: 20, color: AppColors.textPrimary),
                                     ),
                                   ),
                                 ),
@@ -315,9 +315,9 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                           const SizedBox(height: 24),
                           
                           // MATCH ACCURACY
-                          const Text("Match Accuracy", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
+                          Text("Match Accuracy", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
                           const SizedBox(height: 4),
-                          const Text("Controls how flexible RideMate is when matching nearby pickup and drop locations.", style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                          Text("Controls how flexible RideMate is when matching nearby pickup and drop locations.", style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                           const SizedBox(height: 12),
                           Wrap(
                             spacing: 10,
@@ -330,7 +330,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Column(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text("Flexible Time", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
@@ -348,7 +348,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
                           const SizedBox(height: 24),
                           
                           // MODE SELECTOR
-                          const Text("Mode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
+                          Text("Mode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
                           const SizedBox(height: 12),
                           Wrap(
                             spacing: 10,
@@ -399,19 +399,19 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
       child: Material(
         elevation: 8, borderRadius: BorderRadius.circular(12),
         child: Container(
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
+          decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
           child: _isSuggestionsLoading 
             ? const Padding(padding: EdgeInsets.all(20), child: Center(child: CupertinoActivityIndicator()))
             : _suggestions.isEmpty 
-              ? const Padding(padding: EdgeInsets.all(20), child: Text("No results found", textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary)))
+              ? Padding(padding: EdgeInsets.all(20), child: Text("No results found", textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary)))
               : ListView.builder(
                   shrinkWrap: true, itemCount: _suggestions.length,
                   itemBuilder: (c, i) {
                     final s = _suggestions[i];
                     final shortAddr = _formatShortAddress(s['address']);
                     return ListTile(
-                      title: Text(s['display_name'], maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                      subtitle: Text(shortAddr, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      title: Text(s['display_name'], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      subtitle: Text(shortAddr, style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                       onTap: () {
                         setState(() {
                           if (_isSearchingPickup) { 
@@ -458,7 +458,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
       },
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
         border: InputBorder.none,
         isDense: true,
         suffixIcon: IconButton(
@@ -473,7 +473,7 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
     return ListTile(
       onTap: subdued ? null : onTap,
       contentPadding: const EdgeInsets.symmetric(vertical: 8),
-      shape: const Border(bottom: BorderSide(color: AppColors.border)),
+      shape: Border(bottom: BorderSide(color: AppColors.border)),
       leading: Icon(icon, color: subdued ? AppColors.textSecondary.withOpacity(0.5) : AppColors.textSecondary, size: 24),
       title: Text(label, style: TextStyle(color: subdued ? AppColors.textSecondary.withOpacity(0.5) : AppColors.textSecondary, fontSize: 16)),
       trailing: Row(
@@ -512,10 +512,13 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
       context: context,
       builder: (_) => Container(
         height: 250,
-        color: Colors.white,
-        child: CupertinoDatePicker(
-          mode: CupertinoDatePickerMode.time,
-          onDateTimeChanged: (dt) => setState(() => _selectedTime = TimeOfDay.fromDateTime(dt)),
+        color: AppColors.white,
+        child: CupertinoTheme(
+          data: CupertinoThemeData(brightness: Theme.of(context).brightness),
+          child: CupertinoDatePicker(
+            mode: CupertinoDatePickerMode.time,
+            onDateTimeChanged: (dt) => setState(() => _selectedTime = TimeOfDay.fromDateTime(dt)),
+          ),
         ),
       ),
     );
@@ -526,13 +529,14 @@ class _RequestRideScreenState extends State<RequestRideScreen> {
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Container(
+        color: AppColors.white,
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: 4,
           itemBuilder: (c, i) => ListTile(
             title: Text("${i + 1} Seat${i == 0 ? '' : 's'}", textAlign: TextAlign.center, 
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
             onTap: () { setState(() => _selectedSeats = i + 1); Navigator.pop(ctx); },
           ),
         ),
@@ -595,8 +599,8 @@ class _MapPickerOverlayState extends State<MapPickerOverlay> {
             MarkerLayer(markers: [Marker(point: _pickedLoc, child: const Icon(Icons.location_on, color: AppColors.error, size: 40))]),
           ],
         ),
-        Positioned(top: 50, left: 20, child: CircleAvatar(backgroundColor: Colors.white, child: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)))),
-        Positioned(bottom: 30, left: 20, right: 20, child: Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)]), child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_address, maxLines: 2, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)), const SizedBox(height: 16), ElevatedButton(onPressed: _isLoading ? null : () => Navigator.pop(context, MapResult(_pickedLoc, _address)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(double.infinity, 50)), child: _isLoading ? const CupertinoActivityIndicator() : const Text("Confirm Location", style: TextStyle(color: Colors.white)))]))),
+        Positioned(top: 50, left: 20, child: CircleAvatar(backgroundColor: AppColors.white, child: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)))),
+        Positioned(bottom: 30, left: 20, right: 20, child: Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)]), child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_address, maxLines: 2, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)), const SizedBox(height: 16), ElevatedButton(onPressed: _isLoading ? null : () => Navigator.pop(context, MapResult(_pickedLoc, _address)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), minimumSize: const Size(double.infinity, 50)), child: _isLoading ? const CupertinoActivityIndicator() : const Text("Confirm Location", style: TextStyle(color: Colors.white)))]))),
       ]),
     );
   }

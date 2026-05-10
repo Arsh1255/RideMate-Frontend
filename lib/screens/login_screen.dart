@@ -66,9 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 40),
             Stack(alignment: Alignment.center, children: [Image.asset("assets/members.png", width: 300, height: 230)]),
             const SizedBox(height: 20),
-            const Text("Welcome Back", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            Text("Welcome Back", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Login to continue your RideMate journey 🌱", 
               style: TextStyle(color: AppColors.textSecondary), 
               textAlign: TextAlign.center,

@@ -64,7 +64,7 @@ class CompactRideCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        Text(modeLabel, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                        Text(modeLabel, style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                       ],
                     ),
                   ],
@@ -94,16 +94,16 @@ class CompactRideCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
+                    Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text("$dateStr • $timeStr", style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                    Text("$dateStr • $timeStr", style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                   ],
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.airline_seat_recline_normal, size: 16, color: AppColors.textSecondary),
+                    Icon(Icons.airline_seat_recline_normal, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
-                    Text("${ride['availableSeats']} seats left", style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                    Text("${ride['availableSeats']} seats left", style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                   ],
                 ),
               ],

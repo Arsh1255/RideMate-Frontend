@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../core/colors.dart';
+import '../core/theme_mode_notifier.dart';
 
 class AppDrawer extends StatelessWidget {
   final String currentRoute;
@@ -21,7 +22,7 @@ class AppDrawer extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     "RideMate",
                     style: TextStyle(
@@ -54,6 +55,29 @@ class AppDrawer extends StatelessWidget {
               title: "Dashboard",
               route: '/dashboard',
             ),
+            const Spacer(),
+            ValueListenableBuilder<ThemeMode>(
+              valueListenable: themeModeNotifier,
+              builder: (context, mode, _) {
+                final isDark = mode == ThemeMode.dark;
+                return SwitchListTile(
+                  title: const Text(
+                    "Dark Mode",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  secondary: Icon(
+                    isDark ? LucideIcons.moon : LucideIcons.sun,
+                    color: isDark ? AppColors.primaryGreen : AppColors.textSecondary,
+                  ),
+                  value: isDark,
+                  onChanged: (value) {
+                    themeModeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
+                  },
+                  activeColor: AppColors.primaryGreen,
+                );
+              },
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

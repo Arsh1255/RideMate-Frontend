@@ -183,7 +183,7 @@ class _RideChatScreenState extends State<RideChatScreen> {
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft, color: AppColors.black),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.black),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -191,13 +191,13 @@ class _RideChatScreenState extends State<RideChatScreen> {
           children: [
             Text(
               widget.rideName,
-              style: const TextStyle(color: AppColors.black, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(color: AppColors.black, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
                 Text(
                   "${_participants.length} members",
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                 ),
                 const SizedBox(width: 8),
                 StatusPill(status: widget.rideStatus),
@@ -241,11 +241,11 @@ class _RideChatScreenState extends State<RideChatScreen> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  const Icon(LucideIcons.lock, color: AppColors.warningText, size: 16),
+                  Icon(LucideIcons.lock, color: AppColors.warningText, size: 16),
                   const SizedBox(width: 8),
                   Text(
                     "This ride is ${widget.rideStatus} and chat is locked.",
-                    style: const TextStyle(color: AppColors.warningText, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: AppColors.warningText, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -259,9 +259,9 @@ class _RideChatScreenState extends State<RideChatScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(LucideIcons.messageSquare, size: 48, color: AppColors.textSecondary),
+                            Icon(LucideIcons.messageSquare, size: 48, color: AppColors.textSecondary),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               "No messages yet.\nStart coordinating your ride 👋",
                               textAlign: TextAlign.center,
                               style: TextStyle(color: AppColors.textSecondary),
@@ -322,7 +322,7 @@ class _RideChatScreenState extends State<RideChatScreen> {
                         color: AppColors.primaryGreen,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(LucideIcons.send, color: AppColors.white, size: 20),
+                      child: Icon(LucideIcons.send, color: AppColors.white, size: 20),
                     ),
                   ),
                 ],

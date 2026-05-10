@@ -60,7 +60,7 @@ class RideCompletionOverlay extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       LucideIcons.check,
                       color: AppColors.white,
                       size: 50,
@@ -69,7 +69,7 @@ class RideCompletionOverlay extends StatelessWidget {
                   const SizedBox(height: 32),
                   
                   // Celebration Text
-                  const Text(
+                  Text(
                     "Ride Completed!",
                     style: TextStyle(
                       fontSize: 28,
@@ -78,7 +78,7 @@ class RideCompletionOverlay extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Thank you for sharing your ride and reducing emissions.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -182,7 +182,7 @@ class RideCompletionOverlay extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             color: AppColors.textSecondary,
           ),

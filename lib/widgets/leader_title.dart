@@ -57,10 +57,10 @@ class LeaderTile extends StatelessWidget {
             ),
             child: Center(
               child: highlight 
-                  ? const Icon(LucideIcons.medal, size: 14, color: AppColors.white)
+                  ? Icon(LucideIcons.medal, size: 14, color: AppColors.white)
                   : Text(
                       rank,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,

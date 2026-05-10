@@ -206,7 +206,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
     
     final isStranger = !isCreator && !isParticipant && !isPending;
 
-    final departureTime = DateTime.parse(_ride!['departureTime']);
+    final departureTime = DateTime.parse(_ride!['departureTime']).toLocal();
     final timeStr = DateFormat('h:mm a').format(departureTime);
     final dateStr = DateFormat('EEEE, d MMMM').format(departureTime);
 
@@ -216,7 +216,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
     if (modeLabel == 'stride') modeLabel = 'Walk together';
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -276,7 +276,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
                             ],
                           ],
                         ),
-                        Text(modeLabel, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+                        Text(modeLabel, style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                       ],
                     ),
                   ],
@@ -351,7 +351,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: AppColors.border),
+                Divider(color: AppColors.border),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -398,7 +398,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
           if (_ride!['notes'] != null && _ride!['notes'].isNotEmpty) ...[
             const Text("Notes", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 8),
-            Text(_ride!['notes'], style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+            Text(_ride!['notes'], style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
             const SizedBox(height: 24),
           ],
 
@@ -406,7 +406,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
           const Text("Participants", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           const SizedBox(height: 12),
           if (participants.isEmpty)
-            const Text("No participants yet", style: TextStyle(color: AppColors.textSecondary))
+            Text("No participants yet", style: TextStyle(color: AppColors.textSecondary))
           else
             SizedBox(
               height: 80,
@@ -493,7 +493,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
             const Text("Pending Requests", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 12),
             if (pendingRequests.isEmpty)
-              const Text("No pending requests", style: TextStyle(color: AppColors.textSecondary))
+              Text("No pending requests", style: TextStyle(color: AppColors.textSecondary))
             else
               ...pendingRequests.map((req) {
                 final requester = req['userId'];
@@ -547,7 +547,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
       children: [
         Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 8),
-        Text(text, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+        Text(text, style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
       ],
     );
   }

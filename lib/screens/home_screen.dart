@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../core/colors.dart';
 import '../widgets/app_drawer.dart';
+import '../core/theme_mode_notifier.dart';
 import '../widgets/icons_gradient_button.dart';
 import '../screens/request_ride_screen.dart';
 import '../screens/profile_screen.dart';
@@ -91,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     _fetchHomeRides();
     
     _setupSocket();
+    themeModeNotifier.addListener(_onThemeChanged);
   }
 
   @override
@@ -102,7 +104,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     SocketService().off('REQUEST_REJECTED', _onStandardEvent);
     
     _rotationController.dispose();
+    themeModeNotifier.removeListener(_onThemeChanged);
     super.dispose();
+  }
+
+  void _onThemeChanged() {
+    if (mounted) {
+      _fetchHomeRides();
+    }
   }
 
   Future<void> _fetchUserData() async {
@@ -272,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: Center(
             child: RotationTransition(
               turns: _rotationController,
-              child: const Icon(LucideIcons.refreshCw, color: AppColors.white, size: 22),
+              child: Icon(LucideIcons.refreshCw, color: AppColors.white, size: 22),
             ),
           ),
         ),
@@ -356,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             ),
                           ),
 
-                          child: const Row(
+                          child: Row(
                             children: [
                               Icon(LucideIcons.search, size: 20),
 
@@ -427,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   child: _isLoadingRides
                     ? const Center(child: CircularProgressIndicator())
                     : _rides.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Text(
                               "No rides found. Create or join one!",
                               style: TextStyle(color: AppColors.textSecondary),

@@ -36,10 +36,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.background,
 
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
-        leading: const BackButton(color: AppColors.textPrimary),
-        title: const Text(
+        leading: BackButton(color: AppColors.textPrimary),
+        title: Text(
           "Profile",
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -99,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             user['name'],
 
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             user['email'],
 
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -320,7 +320,7 @@ class _StatItem extends StatelessWidget {
         Text(
           value,
 
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -330,7 +330,7 @@ class _StatItem extends StatelessWidget {
         Text(
           label,
 
-          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );

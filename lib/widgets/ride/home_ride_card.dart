@@ -34,7 +34,7 @@ class HomeRideCard extends StatelessWidget {
     final isOwner = relationship == 'owner';
     final isAccepted = membershipStatus == 'accepted';
     
-    final departureTime = DateTime.parse(ride['departureTime']);
+    final departureTime = DateTime.parse(ride['departureTime']).toLocal();
     final timeStr = DateFormat('h:mm a').format(departureTime);
     final dateStr = DateFormat('E, d MMM').format(departureTime);
 
@@ -42,7 +42,7 @@ class HomeRideCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
         boxShadow: [
@@ -64,7 +64,7 @@ class HomeRideCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(ride['rideName'] ?? "Ride", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text("Ride ID: ${ride['id'].toString().substring(ride['id'].toString().length - 5)}", style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                  Text("Ride ID: ${ride['id'].toString().substring(ride['id'].toString().length - 5)}", style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 ],
               ),
               StatusPill(status: rideStatus),
@@ -96,16 +96,16 @@ class HomeRideCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
+                  Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
-                  Text("$dateStr • $timeStr", style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                  Text("$dateStr • $timeStr", style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ],
               ),
               Row(
                 children: [
-                  const Icon(Icons.airline_seat_recline_normal, size: 16, color: AppColors.textSecondary),
+                  Icon(Icons.airline_seat_recline_normal, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
-                  Text("${ride['availableSeats']} Seats", style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                  Text("${ride['availableSeats']} Seats", style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ],
               ),
             ],
@@ -113,9 +113,9 @@ class HomeRideCard extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.currency_rupee, size: 16, color: AppColors.textSecondary),
+              Icon(Icons.currency_rupee, size: 16, color: AppColors.textSecondary),
               const SizedBox(width: 4),
-              Text("₹${ride['pricePerPerson'] ?? 0} per person", style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              Text("₹${ride['pricePerPerson'] ?? 0} per person", style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
             ],
           ),
           const SizedBox(height: 16),

@@ -161,7 +161,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
               const SizedBox(height: 10),
 
-              const Text(
+              Text(
                 "Choose Your Avatar",
                 style: TextStyle(
                   fontSize: 16,
@@ -242,7 +242,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
               const SizedBox(height: 20),
 
-              const Text(
+              Text(
                 "Create Account",
                 style: TextStyle(
                   fontSize: 24,
@@ -253,7 +253,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
               const SizedBox(height: 8),
 
-              const Text(
+              Text(
                 "Join RideMate and start your eco-friendly journey 🌱",
                 style: TextStyle(
                   color: AppColors.textSecondary,

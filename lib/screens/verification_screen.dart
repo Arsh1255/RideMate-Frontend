@@ -81,7 +81,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 "Verify your email",
 
                 style: TextStyle(
@@ -93,7 +93,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
               const SizedBox(height: 10),
 
-              const Text(
+              Text(
                 "We’ve sent a verification link to your BMSCE email.\nPlease verify to continue 🌱\n\nIf you can’t find the email, check your spam folder too.",
 
                 textAlign: TextAlign.center,
