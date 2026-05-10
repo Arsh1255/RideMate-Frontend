@@ -7,6 +7,7 @@ class RideOutlineButton extends StatelessWidget {
   final Object? arguments; // Optional data to pass to the next screen
   final VoidCallback? onTap; // For actions other than navigation
   final bool isFullWidth;
+  final bool isDestructive;
 
   const RideOutlineButton({
     super.key,
@@ -15,15 +16,18 @@ class RideOutlineButton extends StatelessWidget {
     this.arguments,
     this.onTap,
     this.isFullWidth = false,
+    this.isDestructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = isDestructive ? AppColors.error : AppColors.primaryGreen;
+
     Widget button = OutlinedButton(
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        side: const BorderSide(color: AppColors.primaryGreen, width: 1.5),
+        side: BorderSide(color: color, width: 1.5),
       ),
       onPressed: () {
         if (routeName != null) {
@@ -34,8 +38,8 @@ class RideOutlineButton extends StatelessWidget {
       },
       child: Text(
         text,
-        style: const TextStyle(
-          color: AppColors.primaryGreen, 
+        style: TextStyle(
+          color: color, 
           fontWeight: FontWeight.bold, 
           fontSize: 15,
         ),

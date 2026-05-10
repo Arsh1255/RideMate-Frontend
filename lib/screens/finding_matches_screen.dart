@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:intl/intl.dart';
 import '../core/colors.dart';
 import '../widgets/icons_gradient_button.dart';
 import '../screens/ride_in_progress_screen.dart';
-
-class MatchModel {
-  final String name;
-  final String distance;
-  final String image;
-  final Alignment alignment;
-
-  MatchModel({
-    required this.name,
-    required this.distance,
-    required this.image,
-    required this.alignment,
-  });
-}
+import '../service/auth_service.dart';
+import 'dart:async';
+import 'package:flutter/cupertino.dart';
+import '../widgets/ride/expanded_ride_sheet.dart';
 
 class FindingMatchesScreen extends StatefulWidget {
-  const FindingMatchesScreen({super.key});
+  final Map<String, dynamic> searchParams;
+
+  const FindingMatchesScreen({super.key, required this.searchParams});
 
   @override
   State<FindingMatchesScreen> createState() => _FindingMatchesScreenState();
@@ -27,30 +20,10 @@ class FindingMatchesScreen extends StatefulWidget {
 
 class _FindingMatchesScreenState extends State<FindingMatchesScreen>
     with SingleTickerProviderStateMixin {
-  double _radius = 2.0;
   late AnimationController _rippleController;
-
-  // Hardcoded profiles for the Radar
-  final List<MatchModel> _matches = [
-    MatchModel(
-      name: "Priya Nair",
-      distance: "1.2 km",
-      image: "https://i.pravatar.cc/150?u=priya",
-      alignment: const Alignment(0.6, -0.4),
-    ),
-    MatchModel(
-      name: "Arjun Mehta",
-      distance: "1.8 km",
-      image: "https://i.pravatar.cc/150?u=arjun",
-      alignment: const Alignment(-0.7, 0.1),
-    ),
-    MatchModel(
-      name: "Rahul Sharma",
-      distance: "2.4 km",
-      image: "https://i.pravatar.cc/150?u=rahul",
-      alignment: const Alignment(0.1, 0.7),
-    ),
-  ];
+  bool _isLoading = true;
+  List<dynamic> _matches = [];
+  String _error = '';
 
   @override
   void initState() {
@@ -60,6 +33,25 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
+
+    _searchRides();
+  }
+
+  Future<void> _searchRides() async {
+    try {
+      final response = await AuthService().searchRides(widget.searchParams);
+      if (!mounted) return;
+      setState(() {
+        _matches = response['rides'] ?? [];
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -79,9 +71,9 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Finding matches...",
-          style: TextStyle(
+        title: Text(
+          _isLoading ? "Finding matches..." : "Matches Found",
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
@@ -112,17 +104,35 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
                 ),
 
                 // Nearby Rider Avatars
-                ..._matches.map(
-                  (match) => Align(
-                    alignment: match.alignment,
-                    child: _buildRiderAvatar(match),
-                  ),
-                ),
+                if (!_isLoading && _error.isEmpty)
+                  ...List.generate(_matches.length, (index) {
+                    final match = _matches[index];
+                    // Generate random alignments for visualization
+                    final alignments = [
+                      const Alignment(0.6, -0.4),
+                      const Alignment(-0.7, 0.1),
+                      const Alignment(0.1, 0.7),
+                      const Alignment(-0.3, -0.6),
+                      const Alignment(0.5, 0.5),
+                    ];
+                    final alignment = alignments[index % alignments.length];
+                    
+                    return Align(
+                      alignment: alignment,
+                      child: _buildRiderAvatar(match),
+                    );
+                  }),
+                  
+                if (_error.isNotEmpty)
+                  _buildErrorOverlay(_error),
+                  
+                if (!_isLoading && _matches.isEmpty && _error.isEmpty)
+                  const Center(child: Text("No matches found", style: TextStyle(color: AppColors.textSecondary))),
               ],
             ),
           ),
 
-          // BOTTOM INFO & SLIDER SECTION
+          // BOTTOM INFO
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Column(
@@ -149,17 +159,17 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              "Scanning for eco-friendly riders...",
-                              style: TextStyle(
+                              _isLoading ? "Scanning for eco-friendly riders..." : "Scan Complete",
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
                             ),
                             Text(
-                              "We'll notify you when someone matches!",
-                              style: TextStyle(
+                              _isLoading ? "We'll notify you when someone matches!" : "Found ${_matches.length} matches nearby",
+                              style: const TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 12,
                               ),
@@ -171,34 +181,6 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                Row(
-                  children: [
-                    const Text(
-                      "Ride within",
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                    Expanded(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: AppColors.primaryBlue,
-                          inactiveTrackColor: AppColors.border,
-                          thumbColor: AppColors.primaryGreen,
-                        ),
-                        child: Slider(
-                          value: _radius,
-                          min: 1.0,
-                          max: 10.0,
-                          onChanged: (val) => setState(() => _radius = val),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "${_radius.toStringAsFixed(1)} km",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
@@ -207,11 +189,47 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
     );
   }
 
-  /// 🔵 RIPPLE RADAR
   Widget _buildConcentricCircles() {
     return Stack(
       alignment: Alignment.center,
       children: [_buildRipple(0.0), _buildRipple(0.3), _buildRipple(0.6)],
+    );
+  }
+
+  Widget _buildErrorOverlay(String error) {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.white.withOpacity(0.9),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80, height: 80,
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.error),
+              child: const Icon(Icons.close, color: Colors.white, size: 40),
+            ),
+            const SizedBox(height: 24),
+            const Text("Search Failed", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(error, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _error = '';
+                  _isLoading = true;
+                });
+                _searchRides();
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              child: const Text("Retry", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -245,7 +263,11 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
     );
   }
 
-  Widget _buildRiderAvatar(MatchModel match) {
+  Widget _buildRiderAvatar(dynamic match) {
+    final creator = match['creatorId'];
+    final name = creator != null ? creator['name'] ?? "Rider" : "Rider";
+    final profilePic = creator != null ? creator['profilePic'] : null;
+    
     return GestureDetector(
       onTap: () => _showMatchDetails(match),
       child: Column(
@@ -255,7 +277,9 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundImage: NetworkImage(match.image),
+                backgroundImage: profilePic != null 
+                  ? AssetImage("assets/avatars/$profilePic") 
+                  : const AssetImage("assets/avatars/earth.png") as ImageProvider,
               ),
               Positioned(
                 bottom: 2,
@@ -273,11 +297,11 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
             ],
           ),
           Text(
-            match.name,
+            name,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
           ),
           Text(
-            match.distance,
+            match['mode'] ?? "Ride",
             style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 10,
@@ -288,103 +312,38 @@ class _FindingMatchesScreenState extends State<FindingMatchesScreen>
     );
   }
 
-  void _showMatchDetails(MatchModel match) {
+  void _showMatchDetails(dynamic match) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage(match.image),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              match.name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "${match.distance} away",
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 24),
+      builder: (context) => ExpandedRideSheet(
+        rideId: match['_id'],
+        seatsRequested: widget.searchParams['seatsNeeded'],
+        pickupLocation: {
+          'address': 'Selected Location',
+          'coordinates': widget.searchParams['source']
+        },
+      ),
+    );
+  }
 
-            Expanded(
-              child: ListView(
-                children: [
-                  _detailItem(
-                    LucideIcons.car,
-                    "Mode of Travel",
-                    "Auto",
-                    AppColors.primaryBlue,
-                  ),
-                  _detailItem(
-                    LucideIcons.armchair,
-                    "Seats Left",
-                    "2 Seats",
-                    AppColors.primaryGreen,
-                  ),
-                  _detailItem(
-                    LucideIcons.clock,
-                    "Time",
-                    "05:30 PM",
-                    Colors.purple,
-                  ),
-                  _detailItem(
-                    LucideIcons.calendar,
-                    "Date",
-                    "Today, 24 May",
-                    Colors.orange,
-                  ),
-                  _detailItem(
-                    LucideIcons.leaf,
-                    "EcoScore",
-                    "4.8 / 5",
-                    Colors.green,
-                    trailing: "Excellent 🍃",
-                  ),
-                  _detailItem(
-                    LucideIcons.users,
-                    "Ride Preference",
-                    "Comfortable • Eco-friendly",
-                    AppColors.primaryBlue,
-                  ),
-                ],
-              ),
-            ),
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.primaryGreen,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
-            IconGradientButton(
-              text: "Request Match",
-              icon: LucideIcons.zap,
-              onTap: () {
-                Navigator.pop(context); // Close sheet
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RideInProgressScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

@@ -148,11 +148,7 @@ class RideCardOverlay extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundImage:
-                        (user.profilePic != null &&
-                            user.profilePic!.startsWith('http'))
-                        ? NetworkImage(user.profilePic!) as ImageProvider
-                        : AssetImage(user.profilePic ?? "assets/profile.jpg"),
+                    backgroundImage: AssetImage(user.profilePic ?? "assets/avatars/earth.jpg"),
                   ),
                   const SizedBox(height: 6),
                   SizedBox(
@@ -301,20 +297,22 @@ class RideCardOverlay extends StatelessWidget {
   }
 
   Widget _buildOverlayActions() {
-    if (uiState == RideUIState.memberPending)
+    if (uiState == RideUIState.memberPending) {
       return const StatusBanner(
         text: "Confirmation Pending",
         bg: AppColors.pendingBg,
         textColor: AppColors.pendingText,
         icon: LucideIcons.hourglass,
       );
-    if (uiState == RideUIState.memberRemoved)
+    }
+    if (uiState == RideUIState.memberRemoved) {
       return StatusBanner(
         text: "You were removed from the ride",
         bg: AppColors.error.withValues(alpha: 0.1),
         textColor: AppColors.error,
         icon: LucideIcons.circleAlert,
       );
+    }
     return Column(
       children: [
         if (uiState == RideUIState.ownerActive)

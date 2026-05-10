@@ -64,7 +64,6 @@ class RideMateApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
         '/verify': (context) => const VerificationScreen(),
-        '/profile': (context) => const ProfileScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/home': (context) => const HomeScreen(),
       },

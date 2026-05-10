@@ -24,18 +24,18 @@ class _VerificationScreenState extends State<VerificationScreen> {
     });
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      await FirebaseAuth.instance.currentUser?.reload();
 
-      if (user != null) {
-        await user.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
 
+      if (refreshedUser != null) {
         if (!mounted) return;
 
         final args = ModalRoute.of(context)?.settings.arguments as Map?;
 
         final profilePic = (args != null && args["profilePic"] != null)
             ? args["profilePic"]
-            : "boy.png";
+            : "earth.png";
 
         final response = await _authService.verifyWithBackend(profilePic);
 
@@ -94,7 +94,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
               const SizedBox(height: 10),
 
               const Text(
-                "We’ve sent a verification link to your BMSCE email.\nPlease verify to continue 🌱",
+                "We’ve sent a verification link to your BMSCE email.\nPlease verify to continue 🌱\n\nIf you can’t find the email, check your spam folder too.",
 
                 textAlign: TextAlign.center,
 

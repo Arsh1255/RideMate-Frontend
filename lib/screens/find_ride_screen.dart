@@ -28,6 +28,17 @@ class _FindRideScreenState extends State<FindRideScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   int _selectedSeats = 1;
 
+  // New state for search payload
+  bool _flexibleTime = true;
+  String _matchAccuracy = 'Lenient Match';
+  String _selectedMode = 'Ride together';
+
+  // For coordinates
+  double? _sourceLat;
+  double? _sourceLng;
+  double? _destLat;
+  double? _destLng;
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +53,10 @@ class _FindRideScreenState extends State<FindRideScreen> {
       final String temp = _pickupController.text;
       _pickupController.text = _dropController.text;
       _dropController.text = temp;
+      
+      final tempLat = _sourceLat; final tempLng = _sourceLng;
+      _sourceLat = _destLat; _sourceLng = _destLng;
+      _destLat = tempLat; _destLng = tempLng;
     });
   }
 
@@ -50,6 +65,8 @@ class _FindRideScreenState extends State<FindRideScreen> {
     setState(() {
       _pickupController.clear();
       _dropController.clear();
+      _sourceLat = null; _sourceLng = null;
+      _destLat = null; _destLng = null;
     });
   }
 
@@ -71,13 +88,26 @@ class _FindRideScreenState extends State<FindRideScreen> {
         setState(() {
           if (_isPickupActive) {
             _pickupController.text = data['display_name'] ?? "Current Location";
+            _sourceLat = position.latitude;
+            _sourceLng = position.longitude;
           } else {
             _dropController.text = data['display_name'] ?? "Current Location";
+            _destLat = position.latitude;
+            _destLng = position.longitude;
           }
         });
       }
     } catch (e) {
       debugPrint("Location Error: $e");
+    }
+  }
+
+  String _mapModeToBackend(String mode) {
+    switch (mode) {
+      case 'Public Transport': return 'publicTransportation';
+      case 'Ride together': return 'hasVehicle';
+      case 'Walk together': return 'stride';
+      default: return 'hasVehicle';
     }
   }
 
@@ -129,9 +159,13 @@ class _FindRideScreenState extends State<FindRideScreen> {
                             Expanded(
                               child: Column(
                                 children: [
-                                  _buildLocationInput("Pickup location", _pickupController, _pickupFocus),
+                                  _buildLocationInput("Pickup location", _pickupController, _pickupFocus, (v) {
+                                    setState(() { _sourceLat = null; _sourceLng = null; });
+                                  }),
                                   const Divider(height: 32, color: AppColors.border),
-                                  _buildLocationInput("Drop location", _dropController, _dropFocus),
+                                  _buildLocationInput("Drop location", _dropController, _dropFocus, (v) {
+                                    setState(() { _destLat = null; _destLng = null; });
+                                  }),
                                 ],
                               ),
                             ),
@@ -186,6 +220,68 @@ class _FindRideScreenState extends State<FindRideScreen> {
                     value: "$_selectedSeats Seat${_selectedSeats > 1 ? 's' : ''}",
                     onTap: _showSeatPicker,
                   ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Match Accuracy
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Match Accuracy", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: ['Exact Match', 'Moderate Match', 'Lenient Match'].map((mode) {
+                      final isSelected = _matchAccuracy == mode;
+                      return ChoiceChip(
+                        label: Text(mode, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
+                        selected: isSelected,
+                        selectedColor: AppColors.primaryGreen,
+                        onSelected: (selected) {
+                          if (selected) setState(() => _matchAccuracy = mode);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Flexible Time
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Flexible Time", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      Switch(
+                        value: _flexibleTime,
+                        activeColor: AppColors.primaryGreen,
+                        onChanged: (val) => setState(() => _flexibleTime = val),
+                      ),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Mode
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Mode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: ['Public Transport', 'Ride together', 'Walk together'].map((mode) {
+                      final isSelected = _selectedMode == mode;
+                      return ChoiceChip(
+                        label: Text(mode, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
+                        selected: isSelected,
+                        selectedColor: AppColors.primaryGreen,
+                        onSelected: (selected) {
+                          if (selected) setState(() => _selectedMode = mode);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -202,7 +298,47 @@ class _FindRideScreenState extends State<FindRideScreen> {
                 gradient: const LinearGradient(colors: [AppColors.primaryBlue, AppColors.primaryGreen]),
               ),
               child: ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const FindingMatchesScreen())),
+                onPressed: () {
+                  if (_sourceLat == null || _sourceLng == null || _destLat == null || _destLng == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text("Please select a valid location from suggestions or map picker."),
+                        backgroundColor: AppColors.error,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        margin: const EdgeInsets.all(16),
+                      ),
+                    );
+                    return;
+                  }
+
+                  // Build search params
+                  final Map<String, dynamic> params = {
+                    'source': {
+                      'name': _pickupController.text,
+                      'lat': _sourceLat!,
+                      'lng': _sourceLng!,
+                    },
+                    'destination': {
+                      'name': _dropController.text,
+                      'lat': _destLat!,
+                      'lng': _destLng!,
+                    },
+                    'date': _selectedDate.toIso8601String(),
+                    'time': '${_selectedTime.hour}:${_selectedTime.minute}',
+                    'flexibleTime': _flexibleTime,
+                    'seatsNeeded': _selectedSeats,
+                    'mode': _mapModeToBackend(_selectedMode),
+                    'matchAccuracy': _matchAccuracy,
+                  };
+                  
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context) => FindingMatchesScreen(searchParams: params)
+                    )
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
@@ -230,10 +366,11 @@ class _FindRideScreenState extends State<FindRideScreen> {
     );
   }
 
-  Widget _buildLocationInput(String label, TextEditingController controller, FocusNode focus) {
+  Widget _buildLocationInput(String label, TextEditingController controller, FocusNode focus, Function(String) onChanged) {
     return TextField(
       controller: controller,
       focusNode: focus,
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
