@@ -195,17 +195,19 @@ class HomeRideCard extends StatelessWidget {
               // Pending or Rejected
               Row(
                 children: [
-                  Expanded(
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.4,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                       decoration: BoxDecoration(
                         color: Colors.orange.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Center(
                         child: Text(
-                          "Confirmation Pending",
-                          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                          "Confirmation\nPending",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                       ),
                     ),

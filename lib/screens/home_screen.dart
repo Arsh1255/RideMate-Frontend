@@ -12,6 +12,8 @@ import '../service/auth_service.dart';
 import '../widgets/ride/home_ride_card.dart';
 import '../widgets/ride/expanded_ride_sheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../service/socket_service.dart';
+import '../widgets/ride/ride_completion_overlay.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,6 +29,57 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   bool _isLoadingRides = true;
   late AnimationController _rotationController;
 
+  void _onStandardEvent(dynamic data) {
+    if (mounted) _fetchHomeRides();
+  }
+
+  void _onRequestAccepted(dynamic data) {
+    if (mounted) {
+      _fetchHomeRides();
+      if (data is Map && data['rideId'] != null) {
+        SocketService().joinRide(data['rideId']);
+      }
+    }
+  }
+
+  void _onRideCompleted(dynamic data) {
+    if (mounted) {
+      _fetchHomeRides();
+      
+      if (data is Map && data['ecoScoreGained'] != null) {
+        final double ecoScore = (data['ecoScoreGained'] as num).toDouble();
+        final double co2 = (data['co2Saved'] as num).toDouble();
+        
+        showGeneralDialog(
+          context: context,
+          barrierDismissible: false,
+          barrierColor: AppColors.white.withOpacity(0.9),
+          transitionDuration: const Duration(milliseconds: 300),
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return FadeTransition(
+              opacity: animation,
+              child: RideCompletionOverlay(
+                ecoScoreGained: ecoScore,
+                co2Saved: co2,
+                onDismiss: () => Navigator.pop(context),
+              ),
+            );
+          },
+        );
+      }
+    }
+  }
+
+  Future<void> _setupSocket() async {
+    await SocketService().connect();
+    
+    SocketService().on('RIDE_STARTED', _onStandardEvent);
+    SocketService().on('RIDE_COMPLETED', _onRideCompleted);
+    SocketService().on('RIDE_CANCELLED', _onStandardEvent);
+    SocketService().on('REQUEST_ACCEPTED', _onRequestAccepted);
+    SocketService().on('REQUEST_REJECTED', _onStandardEvent);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,10 +89,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
     _fetchUserData();
     _fetchHomeRides();
+    
+    _setupSocket();
   }
 
   @override
   void dispose() {
+    SocketService().off('RIDE_STARTED', _onStandardEvent);
+    SocketService().off('RIDE_COMPLETED', _onRideCompleted);
+    SocketService().off('RIDE_CANCELLED', _onStandardEvent);
+    SocketService().off('REQUEST_ACCEPTED', _onRequestAccepted);
+    SocketService().off('REQUEST_REJECTED', _onStandardEvent);
+    
     _rotationController.dispose();
     super.dispose();
   }
@@ -89,13 +150,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  void _showRideDetails(String rideId) {
-    showModalBottomSheet(
+  void _showRideDetails(String rideId) async {
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ExpandedRideSheet(rideId: rideId),
     );
+    _fetchHomeRides();
   }
 
   Future<void> _startRide(String rideId) async {
@@ -148,8 +210,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  void _onSearchTap(BuildContext context) {
-    Navigator.push(
+  void _onSearchTap(BuildContext context) async {
+    await Navigator.push(
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 350),
@@ -179,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         },
       ),
     );
+    _fetchHomeRides();
   }
 
   @override
@@ -209,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: Center(
             child: RotationTransition(
               turns: _rotationController,
-              child: const Icon(LucideIcons.refreshCw, color: Colors.white, size: 22),
+              child: const Icon(LucideIcons.refreshCw, color: AppColors.white, size: 22),
             ),
           ),
         ),
@@ -218,10 +281,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
 
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-
-            child: Column(
+          child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
@@ -342,14 +402,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 // ---------------- CREATE RIDE ----------------
                 IconGradientButton(
                   text: "Or Create One Yourself",
-
                   icon: LucideIcons.plus,
-
-                  onTap: () => Navigator.push(
-                    context,
-
-                    MaterialPageRoute(builder: (_) => const PostRideScreen()),
-                  ),
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PostRideScreen()),
+                    );
+                    _fetchHomeRides();
+                  },
                 ),
 
                 const SizedBox(height: 30),
@@ -363,23 +423,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                 const SizedBox(height: 20),
 
-                _isLoadingRides
-                  ? const Center(child: CircularProgressIndicator())
-                  : _rides.isEmpty
-                      ? const Center(
-                          child: Text(
-                            "No rides found. Create or join one!",
-                            style: TextStyle(color: AppColors.textSecondary),
+                Expanded(
+                  child: _isLoadingRides
+                    ? const Center(child: CircularProgressIndicator())
+                    : _rides.isEmpty
+                        ? const Center(
+                            child: Text(
+                              "No rides found. Create or join one!",
+                              style: TextStyle(color: AppColors.textSecondary),
+                            ),
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.only(bottom: 40),
+                            itemCount: _rides.length,
+                            itemBuilder: (context, index) {
+                              final ride = _rides[_rides.length - 1 - index];
+                              return _buildRideCard(ride);
+                            },
                           ),
-                        )
-                      : Column(
-                          children: _rides.map((ride) => _buildRideCard(ride)).toList(),
-                        ),
-
-                const SizedBox(height: 40),
+                ),
               ],
             ),
-          ),
         ),
       ),
     );

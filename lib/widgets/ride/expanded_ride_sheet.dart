@@ -7,7 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../screens/profile_screen.dart';
+import '../../screens/ride_chat_screen.dart';
 import '../gradient_button.dart';
+import '../../service/socket_service.dart';
 
 class ExpandedRideSheet extends StatefulWidget {
   final String rideId;
@@ -31,10 +33,35 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
   String? _error;
   final AuthService _authService = AuthService();
 
+  void _onRideUpdate(dynamic _) {
+    if (mounted) _fetchRideDetails();
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchRideDetails();
+    
+    // Join ride room
+    SocketService().joinRide(widget.rideId);
+    
+    // Listen for events
+    SocketService().on('PARTICIPANT_JOINED', _onRideUpdate);
+    SocketService().on('RIDE_STARTED', _onRideUpdate);
+    SocketService().on('RIDE_COMPLETED', _onRideUpdate);
+    SocketService().on('RIDE_CANCELLED', _onRideUpdate);
+    SocketService().on('REQUEST_CREATED', _onRideUpdate);
+  }
+
+  @override
+  void dispose() {
+    SocketService().off('PARTICIPANT_JOINED', _onRideUpdate);
+    SocketService().off('RIDE_STARTED', _onRideUpdate);
+    SocketService().off('RIDE_COMPLETED', _onRideUpdate);
+    SocketService().off('RIDE_CANCELLED', _onRideUpdate);
+    SocketService().off('REQUEST_CREATED', _onRideUpdate);
+    SocketService().leaveRide(widget.rideId);
+    super.dispose();
   }
 
   Future<void> _fetchRideDetails() async {
@@ -190,7 +217,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: const EdgeInsets.all(24),
@@ -286,7 +313,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -342,7 +369,7 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -445,7 +472,16 @@ class _ExpandedRideSheetState extends State<ExpandedRideSheet> {
               child: GradientButton(
                 text: "Open Chatroom",
                 onTap: () {
-                  _showSnackBar("Chatroom coming soon!", isError: false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RideChatScreen(
+                        rideId: widget.rideId,
+                        rideName: _ride!['rideName'] ?? "Ride Chat",
+                        rideStatus: _ride!['status'] ?? "created",
+                      ),
+                    ),
+                  );
                 },
               ),
             ),

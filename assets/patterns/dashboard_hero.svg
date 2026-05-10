@@ -1,0 +1,18 @@
+<svg width="400" height="150" viewBox="0 0 400 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-50,150 Q50,100 150,150 T450,150" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+<path d="M-50,160 Q100,80 250,160 T550,160" stroke="rgba(255,255,255,0.15)" stroke-width="3" fill="none"/>
+<path d="M-50,170 Q150,50 300,170 T650,170" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="none"/>
+<g opacity="0.3">
+  <!-- Subtle leaf 1 -->
+  <path d="M50,120 C50,100 70,100 70,120 C70,140 50,140 50,120 Z" fill="white"/>
+  <path d="M60,105 L60,135" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Subtle leaf 2 -->
+  <path d="M320,80 C320,50 350,50 350,80 C350,110 320,110 320,80 Z" fill="white"/>
+  <path d="M335,55 L335,100" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <!-- Tree-like structure -->
+  <path d="M250,150 L250,110 M250,110 L240,90 M250,110 L260,85" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="240" cy="85" r="8" fill="white" opacity="0.8"/>
+  <circle cx="260" cy="80" r="10" fill="white" opacity="0.8"/>
+  <circle cx="250" cy="70" r="12" fill="white" opacity="0.8"/>
+</g>
+</svg>

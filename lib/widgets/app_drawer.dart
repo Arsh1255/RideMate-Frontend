@@ -31,7 +31,7 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Student Carpooling",
+                    "Find Your Ride buddy!",
                     style: TextStyle(
                       fontSize: 12, 
                       color: AppColors.textSecondary,
@@ -54,29 +54,6 @@ class AppDrawer extends StatelessWidget {
               title: "Dashboard",
               route: '/dashboard',
             ),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(LucideIcons.logOut, color: AppColors.error),
-                label: const Text(
-                  "Logout",
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: AppColors.error),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -105,7 +82,7 @@ class AppDrawer extends StatelessWidget {
           fontSize: 16,
         ),
       ),
-      tileColor: isActive ? AppColors.primaryBlue.withValues(alpha: 0.08) : Colors.transparent,
+      tileColor: isActive ? AppColors.primaryBlue.withValues(alpha: 0.08) : AppColors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onTap: () {
         Navigator.pop(context); 

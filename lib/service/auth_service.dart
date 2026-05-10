@@ -258,6 +258,49 @@ class AuthService {
     if (response.statusCode == 200) return jsonDecode(response.body);
     throw Exception("Failed to remove participant: ${response.body}");
   }
+
+  Future<Map<String, dynamic>> fetchMessages(String rideId) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception("User not logged in");
+    final token = await user.getIdToken(true);
+    
+    final response = await http.get(
+      Uri.parse("${AppConstants.baseUrl}/rides/$rideId/messages"),
+      headers: {
+        "Authorization": "Bearer $token",
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Failed to fetch messages: ${response.body}");
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchRideDetails(String rideId) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception("User not logged in");
+    final token = await user.getIdToken();
+    final response = await http.get(
+      Uri.parse("${AppConstants.baseUrl}/rides/$rideId"),
+      headers: {"Authorization": "Bearer $token"},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception("Failed to fetch ride details: ${response.body}");
+  }
+
+  Future<Map<String, dynamic>> fetchDashboardData() async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception("User not logged in");
+    final token = await user.getIdToken();
+    final response = await http.get(
+      Uri.parse("${AppConstants.baseUrl}/dashboard"),
+      headers: {"Authorization": "Bearer $token"},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception("Failed to fetch dashboard data: ${response.body}");
+  }
 }
 
 

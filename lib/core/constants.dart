@@ -2,6 +2,7 @@
 class AppConstants {
   // Replace with your current laptop IPv4
   static const String baseUrl = "http://10.210.25.173:3000/api";
+  static const String socketUrl = "http://10.210.25.173:3000";
 
   // Endpoints
   static const String verifyToken = "$baseUrl/auth/verify";

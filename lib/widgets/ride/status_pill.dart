@@ -19,8 +19,8 @@ class StatusPill extends StatelessWidget {
         label = 'Active';
         break;
       case 'pending':
-        bgColor = Colors.orange.withOpacity(0.1);
-        textColor = Colors.orange;
+        bgColor = AppColors.warningBg;
+        textColor = AppColors.warningText;
         label = 'Pending';
         break;
       case 'accepted':

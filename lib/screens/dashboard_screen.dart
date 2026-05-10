@@ -1,22 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../core/colors.dart';
 import '../widgets/leader_title.dart';
-import '../widgets/app_drawer.dart'; // 👈 ADD THIS
+import '../widgets/app_drawer.dart';
+import '../service/auth_service.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  bool _isLoading = true;
+  double _totalCo2Saved = 0.0;
+  List<dynamic> _leaderboard = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final data = await AuthService().fetchDashboardData();
+      setState(() {
+        _totalCo2Saved = (data['totalCo2Saved'] ?? 0).toDouble();
+        _leaderboard = data['leaderboard'] ?? [];
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching dashboard data: $e");
+      setState(() => _isLoading = false);
+    }
+  }
+
+  String _formatCo2(double value) {
+    if (value == value.truncateToDouble()) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(1);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
-      // ✅ FIX: real drawer added
       drawer: const AppDrawer(currentRoute: '/dashboard'),
-
       body: SafeArea(
-        child: Padding(
+        child: _isLoading 
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
+            : Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,104 +63,88 @@ class DashboardScreen extends StatelessWidget {
               // 🔹 TOP BAR
               Row(
                 children: [
-                  // LEFT: menu button
                   Builder(
                     builder: (context) => IconButton(
                       icon: const Icon(LucideIcons.menu),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
+                      onPressed: () => Scaffold.of(context).openDrawer(),
                     ),
                   ),
-
-                  // CENTER: title (flexible, prevents overflow)
                   const Expanded(
                     child: Center(
                       child: Text(
                         "RideMate Dashboard",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
-
-                  // RIGHT: score + profile
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.borderBlue),
-                        ),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              LucideIcons.leaf,
-                              size: 14,
-                              color: Colors.green,
-                            ),
-                            SizedBox(width: 4),
-                            Text("320"),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      const CircleAvatar(
-                        radius: 16,
-                        backgroundImage: AssetImage("assets/profile.jpg"),
-                      ),
-                    ],
-                  ),
+                  const SizedBox(width: 48), // Balance for menu icon
                 ],
               ),
 
               const SizedBox(height: 20),
 
-              // 🔹 ECO CARD
+              // 🔹 ECO CARD (Hero)
               Container(
-                padding: const EdgeInsets.all(20),
+                width: double.infinity,
+                clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [AppColors.primaryBlue, AppColors.primaryGreen],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryGreen.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Row(
+                child: Stack(
                   children: [
-                    const Icon(LucideIcons.leaf, color: Colors.white, size: 32),
-                    const SizedBox(width: 12),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Total CO₂ Saved",
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          "14.2 kg",
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    // Decorative SVG pattern
+                    Positioned.fill(
+                      child: SvgPicture.asset(
+                        "assets/patterns/dashboard_hero.svg",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(LucideIcons.leaf, color: AppColors.white, size: 32),
                           ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          "You're in the top 5% of BMSCE!",
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      ],
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Total CO₂ Saved",
+                                style: TextStyle(color: Color(0xB3FFFFFF), fontSize: 14), // Colors.white70 is 0xB3FFFFFF
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "${_formatCo2(_totalCo2Saved)} kg",
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -139,23 +160,32 @@ class DashboardScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               Expanded(
-                child: ListView(
-                  children: const [
-                    LeaderTile(
-                      rank: "1",
-                      name: "Arsh",
-                      points: "1420",
-                      highlight: true,
-                    ),
-                    LeaderTile(rank: "2", name: "Ash", points: "1280"),
-                    LeaderTile(rank: "3", name: "Lufi", points: "1150"),
-                    LeaderTile(
-                      rank: "4",
-                      name: "Monkey de lufey",
-                      points: "980",
-                    ),
-                  ],
-                ),
+                child: _leaderboard.isEmpty
+                    ? const Center(child: Text("No leaderboard data yet.", style: TextStyle(color: AppColors.textSecondary)))
+                    : ListView.builder(
+                        itemCount: _leaderboard.length,
+                        itemBuilder: (context, index) {
+                          final user = _leaderboard[index];
+                          final rank = index + 1;
+                          final name = user['name'] ?? "Unknown User";
+                          final rawScore = user['ecoScore'] ?? 0;
+                          final double scoreDouble = rawScore is num ? rawScore.toDouble() : (double.tryParse(rawScore.toString()) ?? 0.0);
+                          final points = scoreDouble == scoreDouble.truncateToDouble() 
+                              ? scoreDouble.toInt().toString() 
+                              : scoreDouble.toStringAsFixed(2);
+                          
+                          // Handle medal styling
+                          bool isTop3 = rank <= 3;
+                          return LeaderTile(
+                            rank: rank.toString(),
+                            name: name,
+                            points: points,
+                            highlight: isTop3,
+                            rankIndex: index,
+                            profilePic: user['profilePic'],
+                          );
+                        },
+                      ),
               ),
             ],
           ),
