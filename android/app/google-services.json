@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "585867791362",
+    "project_id": "ridemate-7e08d",
+    "storage_bucket": "ridemate-7e08d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585867791362:android:aa854cf0e42284611ceb1b",
+        "android_client_info": {
+          "package_name": "com.example.ride_mate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQd6RYRUhvYFNV0IDhhcOekZSpp1DhaAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585867791362:android:2b0e4a676c36cc071ceb1b",
+        "android_client_info": {
+          "package_name": "com.example.ride_mate.ride_mate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQd6RYRUhvYFNV0IDhhcOekZSpp1DhaAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
