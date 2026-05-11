@@ -323,15 +323,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
 
                     GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-
-                        MaterialPageRoute(
-                          builder: (_) => ProfileScreen(
-                            userId: FirebaseAuth.instance.currentUser!.uid,
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProfileScreen(
+                              userId: FirebaseAuth.instance.currentUser!.uid,
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                        _fetchUserData();
+                      },
 
                       child: CircleAvatar(
                         radius: 18,

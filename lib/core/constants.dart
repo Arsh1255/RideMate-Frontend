@@ -1,8 +1,8 @@
 // lib/core/constants.dart
 class AppConstants {
-  // Replace with your current laptop IPv4
-  static const String baseUrl = "http://10.210.25.173:3000/api";
-  static const String socketUrl = "http://10.210.25.173:3000";
+  // Replace with YOUR_BACKEND_URL
+  static const String baseUrl = "YOUR_BACKEND_URL/api";
+  static const String socketUrl = "YOUR_BACKEND_URL";
 
   // Endpoints
   static const String verifyToken = "$baseUrl/auth/verify";
